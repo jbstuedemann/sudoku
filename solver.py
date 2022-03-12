@@ -1,4 +1,6 @@
 import copy
+import os
+import time
 
 class Game:
     def __init__(self, startingBoard):
@@ -6,7 +8,6 @@ class Game:
         for x in range(9):
             for y in range(9):
                 self.board[(x, y)] = set(n for n in range(1,10))
-        self.setnums = len(startingBoard)
         self.startingBoard = set()
         for pos in startingBoard.keys():
             self.startingBoard.add(pos)
@@ -28,8 +29,8 @@ class Game:
                     self.removeValue(coord, value)
 
         self.board[pos] = set([value])
-        self.setnums += 1
         self.updateSingles(pos)
+
 
     def updateSingles(self, pos):
         (x, y) = pos
@@ -105,9 +106,20 @@ class Game:
                     return False
         return True
 
+    def isSolved(self):
+        for x in range(9):
+            for y in range(9):
+                if len(self.board[(x, y)]) != 1:
+                    return False
+        return True
+
     def solve(self):
-        print(self)
-        if self.setnums == 81:
+        solved = self.solveHelper()
+        if solved == None: return
+        self.board = solved.board
+        
+    def solveHelper(self):
+        if self.isSolved():
             return self
 
         for x in range(9):
@@ -121,12 +133,83 @@ class Game:
                     if not test.isPossible():
                         test.removeValue((x, y), nextValue)
                     else:
-                        next = test.solve()
+                        next = test.solveHelper()
                         if next != None:
                             return next
                         else:
                             test.removeValue((x, y), nextValue)
         return None
+
+    def debugString(self):
+        outStr = ""
+        for y in range(9):
+            if (y%3==0): outStr += "  "+"-"*79+"\n"
+            else: outStr += ' |'+' '*26+'|'+' '*26+'|'+' '*25+'|\n'
+            for x in range(9):
+                if (x%3==0): outStr += " | "
+                else: outStr += '   '
+                for n in range(1,4):
+                    if (x, y) in self.startingBoard:
+                        outStr += '\033[1m\033[93m'
+                        for n in range(1,10):
+                            if n in self.board[(x, y)]:
+                                break
+                    else:
+                        if len(self.board[(x, y)])==1:
+                            outStr += '\033[1m\033[94m'
+                            for n in range(1,10):
+                                if n in self.board[(x, y)]:
+                                    break
+                        else:
+                            if n in self.board[(x, y)]:
+                                outStr += '\033[96m'
+                            else: outStr += '\033[91m'
+                    outStr += str(n)+' \033[0m'
+            outStr += '|\n'
+            for x in range(9):
+                if (x%3==0): outStr += " | "
+                else: outStr += '   '
+                for n in range(4,7):
+                    if (x, y) in self.startingBoard:
+                        outStr += '\033[1m\033[93m'
+                        for n in range(1,10):
+                            if n in self.board[(x, y)]:
+                                break
+                    else:
+                        if len(self.board[(x, y)])==1:
+                            outStr += '\033[1m\033[94m'
+                            for n in range(1,10):
+                                if n in self.board[(x, y)]:
+                                    break
+                        else:
+                            if n in self.board[(x, y)]:
+                                outStr += '\033[96m'
+                            else: outStr += '\033[91m'
+                    outStr += str(n)+' \033[0m'
+            outStr += '|\n'
+            for x in range(9):
+                if (x%3==0): outStr += " | "
+                else: outStr += '   '
+                for n in range(7,10):
+                    if (x, y) in self.startingBoard:
+                        outStr += '\033[1m\033[93m'
+                        for n in range(1,10):
+                            if n in self.board[(x, y)]:
+                                break
+                    else:
+                        if len(self.board[(x, y)])==1:
+                            outStr += '\033[1m\033[94m'
+                            for n in range(1,10):
+                                if n in self.board[(x, y)]:
+                                    break
+                        else:
+                            if n in self.board[(x, y)]:
+                                outStr += '\033[96m'
+                            else: outStr += '\033[91m'
+                    outStr += str(n)+' \033[0m'
+            outStr += '|\n'
+        outStr += "  "+"-"*79+"\n"
+        return outStr
 
     def __str__(self):
         outStr = ""
@@ -280,6 +363,17 @@ evilBoard = {
     (8, 7): 6
 }
 
-game = Game(expertBoard)
-# game.solve()
-print(game)
+def main():
+    boards = [easyBoard, hardBoard, expertBoard, evilBoard]
+    for board in boards:
+        game = Game(board)
+        starting_time = time.time()
+        game.solve()
+        finish_time = time.time()
+        print("*"*31)
+        print(game)
+        print("\tSolved board in "+str(int((finish_time-starting_time)*1000))+"ms\n\n")
+        print("*"*31)
+
+if __name__ == '__main__':
+    main()
