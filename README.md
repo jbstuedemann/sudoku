@@ -1,8 +1,8 @@
-#Sudoku Solver
+# Sudoku Solver
 
 This project uses **OpenCV** and **TensorFlow** to scan images and screenshots for sudoku boards, then solves them using sudoku rules.
 
-###Dependencies
+### Dependencies
 
 - [TensorFlow](https://www.tensorflow.org/)
 - [OpenCV](https://opencv.org/)
@@ -11,7 +11,7 @@ This project uses **OpenCV** and **TensorFlow** to scan images and screenshots f
 - [mss](https://python-mss.readthedocs.io/)
 - [argparse](https://docs.python.org/3/library/argparse.html)
 
-###Usage
+### Usage
 
 There are two main commands: ```--screen``` and ```--image IMAGE```
 
