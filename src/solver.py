@@ -117,8 +117,8 @@ class Game:
     def solve(self):
         solved = self.solveHelper()
         if solved is None:
-            for n in range(3):
-                solved = self.solveHelper()
+            for n in range(5):
+                solved = self.solveHelper(depth=n)
                 if solved is not None:
                     break
             if solved is None:

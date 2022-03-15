@@ -1,3 +1,2 @@
-training_data/* filter=lfs diff=lfs merge=lfs -text
-training_data/ filter=lfs diff=lfs merge=lfs -text
-ocr.h5 filter=lfs diff=lfs merge=lfs -text
+src/training_data/ filter=lfs diff=lfs merge=lfs -text
+src/ocr.h5 filter=lfs diff=lfs merge=lfs -text

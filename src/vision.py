@@ -95,4 +95,4 @@ def getBoardFromFile(filename, model_file="ocr.h5", debug=False):
 
 if __name__ == "__main__":
     DEBUG = True
-    print(getBoardFromImage("test_board.png"))
+    print(getBoardFromFile("../test_board.png"))
