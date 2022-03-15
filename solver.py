@@ -116,9 +116,15 @@ class Game:
 
     def solve(self):
         solved = self.solveHelper()
-        if solved == None: return
-        self.board = solved.board
+        if solved is None:
+            for n in range(3):
+                solved = self.solveHelper()
+                if solved is not None:
+                    break
+            if solved is None:
+                return None
 
+        self.board = solved.board
         self.solution = {}
         for x in range(9):
             for y in range(9):
@@ -129,9 +135,11 @@ class Game:
                         break
                 self.solution[(x, y)] = label
         
-    def solveHelper(self):
+    def solveHelper(self, depth=0):
         if self.isSolved():
             return self
+        elif depth < 0:
+            return None
 
         for x in range(9):
             for y in range(9):
@@ -144,7 +152,7 @@ class Game:
                     if not test.isPossible():
                         test.removeValue((x, y), nextValue)
                     else:
-                        next = test.solveHelper()
+                        next = test.solveHelper(depth=depth-1)
                         if next != None:
                             return next
                         else:
@@ -243,17 +251,6 @@ class Game:
             outStr += '|\n'
         outStr += " "+"-"*29+"\n"
         return outStr
-
-class colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 easyBoard = {
     (0, 0): 3,
@@ -382,9 +379,18 @@ def solveGame(board, debug=False):
     if debug:
         print("*"*31)
         print(game)
-        print("\tSolved board in "+str(int((finish_time-starting_time)*1000))+"ms\n\n")
+        time_string = ""
+        milliseconds = int((finish_time-starting_time)*1000)
+        if milliseconds < 100:
+            time_string += '\033[92m' + str(milliseconds)
+        elif milliseconds < 200:
+            time_string += '\033[93m' + str(milliseconds)
+        else:
+            time_string += '\033[91m' + str(milliseconds)
+        time_string += '\033[0m'
+        print("  Solved board in "+time_string+"ms\n\n")
         print("*"*31)
-    return game.solution
+    return game
 
 def solveGames(boards, debug=False):
     out = []

@@ -4,6 +4,7 @@ from imutils.perspective import four_point_transform
 import math
 import numpy as np
 from tensorflow import keras
+import os
 
 DEBUG = False
 
@@ -41,24 +42,20 @@ def _locateBoard(image_init):
         cv2.waitKey(0)
     return transformed_image
 
-def _getDigit(digit_image, model, digit_threshold=0.01):
+def _getDigit(digit_image, model):
     cnts = imutils.grab_contours(cv2.findContours(digit_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
     if len(cnts) == 0:
-        return None
+        return 0
     digit_cnt = max(cnts, key=cv2.contourArea)
     mask = np.zeros(digit_image.shape, dtype="uint8")
     cv2.drawContours(mask, [digit_cnt], -1, 255, -1)
-    percent_full = cv2.countNonZero(mask) / float(mask.shape[0] * mask.shape[1])
-    if percent_full < digit_threshold:
-        return None
-
     digit = cv2.bitwise_and(digit_image, digit_image, mask=mask)
     img_tensor = cv2.resize(digit, (128, 128))
     img_tensor = img_tensor.astype("float") / 255.0
     img_tensor = keras.preprocessing.image.img_to_array(img_tensor)
     img_tensor = np.expand_dims(img_tensor, axis=0)
     model_output = model.predict(img_tensor)
-    return model_output[0][1:].argmax()+1
+    return model_output.argmax()
         
 def _getDigitLocations(board_image, model, padding_percent=0.0):
     board = {}
@@ -71,9 +68,9 @@ def _getDigitLocations(board_image, model, padding_percent=0.0):
             pixel_y_start= math.floor((board_image.shape[0]/9) * y) + y_padding
             pixel_y_finish = math.floor((board_image.shape[0]/9) * (y+1)) - y_padding
             digit_image = board_image[pixel_y_start:pixel_y_finish, pixel_x_start:pixel_x_finish]
-            digit = _getDigit(digit_image, model, digit_threshold=0)
+            digit = _getDigit(digit_image, model)
 
-            if digit is None:
+            if digit == 0:
                 continue
 
             if DEBUG:
@@ -85,12 +82,16 @@ def _getDigitLocations(board_image, model, padding_percent=0.0):
 
     return board
 
-def getBoardFromImage(filename, model_file="ocr.h5"):
+def getBoardFromImage(img, model_file="ocr.h5", debug=False):
+    if not debug: os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     model = keras.models.load_model(model_file)
-    test_image = cv2.imread(filename)
-    board_image = _locateBoard(test_image)
+    board_image = _locateBoard(img)
     board = _getDigitLocations(board_image, model, padding_percent=0.01)
     return board
+
+def getBoardFromFile(filename, model_file="ocr.h5", debug=False):
+    test_image = cv2.imread(filename)
+    return getBoardFromImage(test_image, model_file, debug)
 
 if __name__ == "__main__":
     DEBUG = True
