@@ -12,6 +12,7 @@ class Game:
         for pos in startingBoard.keys():
             self.startingBoard.add(pos)
             self.setValue(pos, startingBoard[pos])
+        self.solution = None
     
     def setValue(self, pos, value):
         (x, y) = pos
@@ -117,6 +118,16 @@ class Game:
         solved = self.solveHelper()
         if solved == None: return
         self.board = solved.board
+
+        self.solution = {}
+        for x in range(9):
+            for y in range(9):
+                label = None
+                for n in range(1, 10):
+                    if n in self.board[(x, y)]:
+                        label = n
+                        break
+                self.solution[(x, y)] = label
         
     def solveHelper(self):
         if self.isSolved():
@@ -363,17 +374,23 @@ evilBoard = {
     (8, 7): 6
 }
 
-def main():
-    boards = [easyBoard, hardBoard, expertBoard, evilBoard]
-    for board in boards:
-        game = Game(board)
-        starting_time = time.time()
-        game.solve()
-        finish_time = time.time()
+def solveGame(board, debug=False):
+    game = Game(board)
+    starting_time = time.time()
+    game.solve()
+    finish_time = time.time()
+    if debug:
         print("*"*31)
         print(game)
         print("\tSolved board in "+str(int((finish_time-starting_time)*1000))+"ms\n\n")
         print("*"*31)
+    return game.solution
+
+def solveGames(boards, debug=False):
+    out = []
+    for board in boards:
+        out.append(solveGame(board, debug))
+    return out
 
 if __name__ == '__main__':
-    main()
+    solveGames([easyBoard, hardBoard, expertBoard, evilBoard], debug=True)
