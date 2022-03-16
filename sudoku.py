@@ -4,6 +4,7 @@ import numpy as np
 import src.vision as vision
 import src.solver as solver
 
+# Given an input filename, find it's sudoku board, and solve
 def solveGameFromImage(filename):
     scanned_board = vision.getBoardFromFile(filename, model_file="src/ocr.h5")
     print("Scanned Board:")
@@ -11,6 +12,7 @@ def solveGameFromImage(filename):
     print("Solved Board:")
     solver.solveGame(scanned_board, debug=True)
 
+# Take a screenshot of the current screen, and solve it's sudoku board
 def solveGameFromScreenshot():
     sct = mss()
     sc_sht = sct.grab(sct.monitors[1])
@@ -21,6 +23,8 @@ def solveGameFromScreenshot():
     print("Solved Board:")
     solver.solveGame(scanned_board, debug=True)
 
+
+# Add arguments for calling this python file
 parser = argparse.ArgumentParser(description='Scan and solve sudoku boards. Trained to read the font on \033[4mhttps://sudoku.com/\033[0m')
 parser.add_argument('-s', '--screen', help="take a screenshot and process it", action="store_true")
 parser.add_argument('-i', '--image', help="use a given image and process it")
