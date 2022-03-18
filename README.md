@@ -37,6 +37,9 @@ There are two main commands: `--screen` and `--image IMAGE`
     `getBoardFromImage(img, model_file, debug)` - Given an image and an h5 model, return the dictionary representation of the board.
     `getBoardFromFile(filename, model_file, debug)` - Given an image filename and an h5 model, return the dictionary representation of the board.
   - ### [create_training_data.py](https://github.com/jbstuedemann/sudoku/blob/main/src/create_training_data.py)
-    WIP
+    This was used to create the training and testing data for the OCR. The idea is to read in sudoku boards and process them, and then let the user calssify each digit. Then, the program will randomly read in the data, and fill the dataset with random variations of the numbers. This is distributed between a few functions.
+    `saveTrainingData(input_filename)` - This reads in a sudoku board, and prompts the user to press keys depending on what digit each image represents.
+    `loadData(train_samples, test_samples)` - This function takes in a number of train and test samples per class, and creates the database given the images in the respective directory.
+
   - ### [ocr.ipynb](https://github.com/jbstuedemann/sudoku/blob/main/src/ocr.ipynb)
     This python notebook created the `ocr.h5` in to process images of numbers. The general structure is a CNN with an input size of (128, 128, 1). They are processed through 2 convultions, then through 2 linear layers. 
