@@ -2,6 +2,9 @@
 
 This project uses **OpenCV** and **TensorFlow** to scan images and screenshots for sudoku boards, then solves them using sudoku rules.
 
+https://user-images.githubusercontent.com/31936377/159992848-ebf1a910-67b0-44bc-bc40-1fac4e43baaa.mp4
+
+
 ## Dependencies
 
 - [TensorFlow](https://www.tensorflow.org/)
